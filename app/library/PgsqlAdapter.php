@@ -184,10 +184,10 @@ class PgsqlAdapter extends PdoAdapter
 		$setStr = '';
 		foreach ($set as $setField => $setItem) {
 			if ($setItem === null)
-				$setStr .= "$setField = NULL, ";
+				$setStr .= "\"$setField\" = NULL, ";
 			else {
 				$params[] = $setItem;
-				$setStr .= "$setField = ?, ";
+				$setStr .= "\"$setField\" = ?, ";
 			}
 		}
 
@@ -240,7 +240,18 @@ class PgsqlAdapter extends PdoAdapter
 		if (empty($columns) || empty($columns))
 			return false;
 
-		$columns   = implode(', ', $columns);
+		$columnsStr = '';
+
+
+		$count = count($columns);
+
+		foreach ($columns as $key => $value)
+		{
+			$columnsStr .= "\"$value\"";
+
+			if($key != $count-1)
+				$columnsStr .= ', ';
+		}
 
 		$valuesStr = [];
 		foreach ($values as $valueSet) {
@@ -253,13 +264,13 @@ class PgsqlAdapter extends PdoAdapter
 		}
 		$valuesStr = implode(', ', $valuesStr);
 
-		$sql = "INSERT INTO {$table} ({$columns}) VALUES {$valuesStr} RETURNING id";
+		$sql = "INSERT INTO {$table} ({$columnsStr}) VALUES {$valuesStr} RETURNING id";
 
 		try
 		{
 			$result = $this->db->query($sql, array_merge(...$values));
 			$result->setFetchMode(PDO::FETCH_ASSOC);
-			
+
 			$lastId = $result->fetch()['id'];
 
 		} catch (Exception $e) {

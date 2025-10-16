@@ -15,6 +15,9 @@ class EmStringField extends FieldBase
 	 */
 	public function saveValue()
 	{
+		if(empty($this->fieldValue))
+			return null;
+
 		return $this->fieldValue;
 	}
 }
