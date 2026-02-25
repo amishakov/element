@@ -7,12 +7,12 @@ class SettingsController extends ControllerBase
 	 */
 	public function changeNameAction()
 	{
-		$table = $this->request->getPost('tableName');
+		$tableName = $this->request->getPost('tableName');
 		$field = $this->request->getPost('field');
 		$name  = $this->request->getPost('name');
 		$type  = $this->request->getPost('type');
 
-		if (empty($table) || empty($field))
+		if (empty($tableName) || empty($field))
 			return $this->jsonResult(['success' => false, 'message' => 'required fields is not found']);
 
 		if (empty($type))
@@ -21,7 +21,7 @@ class SettingsController extends ControllerBase
 		$emTypes = EmTypes::findFirst([
 			'conditions' => 'table_name = ?0 and field = ?1',
 			'bind' => [
-				$table, $field
+				$tableName, $field
 			]
 		]);
 
@@ -30,7 +30,7 @@ class SettingsController extends ControllerBase
 
 		$emTypes->name  = $name;
 		$emTypes->field = $field;
-		$emTypes->table = $table;
+		$emTypes->table_name = $tableName;
 		$emTypes->type  = $type;
 		$emTypes->save();
 
